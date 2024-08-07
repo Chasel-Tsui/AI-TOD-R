@@ -1,0 +1,487 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <!-- Meta tags for social media banners, these should be filled in appropriatly as they are your "business card" -->
+  <!-- Replace the content tag with appropriate information -->
+  <meta name="description" content="ConGeo: Robust Cross-view Geo-localization across Ground View Variations">
+  <meta property="og:title" content="ConGeo: Robust Cross-view Geo-localization across Ground View Variations"/>
+  <meta property="og:description" content="ConGeo: Robust Cross-view Geo-localization across Ground View Variations"/>
+  <meta property="og:url" content="https://chasel-tsui.github.io/ConGeo/"/>
+  <!-- Path to banner image, should be in the path listed below. Optimal dimenssions are 1200X630-->
+  <meta property="og:image" content="static/image/your_banner_image.png" />
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+
+
+  <meta name="twitter:title" content="ConGeo: Robust Cross-view Geo-localization across Ground View Variations">
+  <meta name="twitter:description" content="ConGeo: Robust Cross-view Geo-localization across Ground View Variations">
+  <!-- Path to banner image, should be in the path listed below. Optimal dimenssions are 1200X600-->
+  <meta name="twitter:image" content="static/images/your_twitter_banner_image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <!-- Keywords for your paper to be indexed by-->
+  <meta name="keywords" content="remote sensing, geo-localization, contrastive learning">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+  <title>ConGeo</title>
+  <link rel="icon" type="image/x-icon" href="static/images/favicon.ico">
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+  rel="stylesheet">
+
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+  href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="static/css/index.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://documentcloud.adobe.com/view-sdk/main.js"></script>
+  <script defer src="static/js/fontawesome.all.min.js"></script>
+  <script src="static/js/bulma-carousel.min.js"></script>
+  <script src="static/js/bulma-slider.min.js"></script>
+  <script src="static/js/index.js"></script>
+  <script type="text/x-mathjax-config"> MathJax.Hub.Config({ tex2jax: {inlineMath: [['$','$'],['\\(','\\)']]} }); </script> <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"> </script>
+</head>
+<body>
+
+
+  <section class="hero">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column has-text-centered">
+            <h1 class="title is-1 publication-title"><b>ConGeo:</b> <br>
+                Robust Cross-view Geo-localization across Ground View Variations </h1>
+            <div class="is-size-5 publication-authors">
+              <!-- Paper authors -->
+              <span class="author-block">
+              <a href="https://chasel-tsui.github.io/Homepage/" target="_blank">Chang Xu</a><sup>*</sup>,</span>
+              <span class="author-block">
+              <a href="https://chasel-tsui.github.io/Homepage/" target="_blank">Ruixiang Zhang</a><sup>*</sup>,</span>
+              <span class="author-block">
+              <span class="author-block">
+              <a href="https://scholar.google.com/citations?user=-aVL-UQAAAAJ&hl=zh-CN" target="_blank">Wen Yang</a>,</span>
+            </span>
+            </div>
+
+                  <div class="is-size-5 publication-authors">
+                    <span class="author-block">
+                      <a href="https://github.com/ZhuHaoranEIS" target="_blank">Haoran Zhu</a>,</span>
+                    <span class="author-block">
+                      <a href="https://dingjiansw101.github.io" target="_blank">Jian Ding</a> ,and </span>
+                      <span class="author-block">
+                        <a href="https://cs.whu.edu.cn/info/1019/2878.htm" target="_blank">Gui-song Xia</a></span>
+                  </div>
+
+                  <div class="is-size-5 publication-authors">
+                    <span class="author-block">Wuhan University, </span>
+                    <span class="author-block">EPFL</span>
+                    <span class="author-block">KAUST</span>
+                  </div>
+
+                  <div class="is-size-5 publication-authors">
+                    <span class="author-block">Under submission</span>
+                    <span class="eql-cntrb"><small><br><sup>*</sup>Indicates Equal Contribution</small></span>
+                  </div>
+
+                  <div class="is-size-5 publication-authors">
+                    <span class="author-block">
+                      <p><br></p>
+                      <!--<a href="http://www.epfl.ch/labs/eceo/"><img src="static/images/Fig_ECEO.png" width="180px" margin-left="20px" margin-right="20px" alt="ECEO Logo"/></a></span>-->
+                      <a href="https://www.whu.edu.cn/"><img src="static/images/Fig_WHU.png" width="80px"  margin-left="20px"  margin-right="20px" alt="WHU Logo"/></a></span>
+                      <a href="http://epfl.ch"><img src="static/images/Fig_EPFL.png" width="180px"  margin-left="20px"  margin-right="20px" alt="EPFL Logo"/></a></span>
+                      <!--<a href="https://nlp.epfl.ch/"><img src="static/images/Fig_NLP.png" width="100px"  margin-left="20px" margin-right="20px" alt="NLP Logo"/></a></span> -->
+                  </div>
+
+                  <!---TODO ECEO LOGO, and change logo from red/white invert, put pipeline image-->
+                  <div class="column has-text-centered">
+                    <div class="publication-links">
+                         <!-- Arxiv PDF link -->
+                      <span class="link-block">
+                        <a href="https://arxiv.org/abs/2403.13965" target="_blank"
+                        class="external-link button is-normal is-rounded is-dark">
+                        <span class="icon">
+                          <i class="fas fa-file-pdf"></i>
+                        </span>
+                        <span>Pre-Print</span>
+                      </a>
+                    </span>
+
+                    <!-- Supplementary PDF link -->
+                    <!--<span class="link-block">
+                      <a href="static/pdfs/supplementary_material.pdf" target="_blank"
+                      class="external-link button is-normal is-rounded is-dark">
+                      <span class="icon">
+                        <i class="fas fa-file-pdf"></i>
+                      </span>
+                      <span>Supplementary</span>
+                    </a>
+                  </span>-->
+
+                  <!-- Github link -->
+                  <span class="link-block">
+                    <a href="https://github.com/eceo-epfl/ConGeo" target="_blank"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                      <i class="fab fa-github"></i>
+                    </span>
+                    <span>Code</span>
+                  </a>
+                </span>
+
+                <div class="container is-max-desktop">
+                <div class="columns is-centered">
+                <div class="column is-four-fifths">
+                <div class="content has-text-justified">
+                  <p><br></p>
+                <p>
+                <div align="center">
+                <b style="font-size:21px; ">ConGeo enhances base models' robustness to ground view variations by aligning image variations with their original representations.</b> 
+                <p><br></p>
+                </div>
+                <div align="center">
+                <img src="static/images/Fig_Summary.png" alt="An Overview of ConGeo" width="80%"/>
+                </div> 
+                  As <b> a generic learning objective </b> for cross-view geo-localization, when integrated into state-of-the-art pipelines, ConGeo significantly boosts the performance of <b> three base models </b> on <b> four geo-localization benchmarks</b>  for diverse ground view variations.</p>
+                <!-- ArXiv abstract Link -->
+                <!--<span class="link-block">
+                  <a href="https://arxiv.org/abs/<ARXIV PAPER ID>" target="_blank"
+                  class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>-->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Paper abstract -->
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3 has-text-centered">Motivation</h2>
+        <div class="content has-text-justified">
+        <p>Cross-view geo-localization aims at localizing a ground-level query image by matching it to its corresponding geo-referenced aerial view. In real-world scenarios, the task requires accommodating diverse ground images captured by users with varying orientations and reduced field of views (FoVs), including the following settings: 
+        </p>
+        <ul>
+          <li><b>North-aligned:</b> Ground-view and aerial-view images are aligned to the North.</li>
+          <li><b>Unknown Orientation:</b> Ground-view images are of arbitrary orientations (FoV=360°).</li>
+          <li><b>Limited Field of View:</b> Ground-view images are of arbitrary orientations and limited fielf of views (e.g., FoV=70°, 90°, or 180°).</li>
+        </ul>
+          <div align="center">
+            <img src="static/images/Fig_tasks.png" alt="An Overview of ConGeo" width="80%"/>
+          </div>
+          <p><br></p>
+          <p>
+            However, existing learning pipelines are orientation-specific or FoV-specific, demanding separate model training for different ground view variations. To tackle this challenge, we propose <b>ConGeo</b>, a single- and cross-modal <b>Con</b>trastive method for <b>Geo</b>-localization that improves the base model's <b>robustness across various ground view variations</b>.
+          </p>
+       </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- End paper abstract -->
+
+
+
+<!-- Method -->
+<section class="section hero">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3">Method</h2>
+          <div class="content has-text-justified">
+            <p>
+            <b>ConGeo</b> enhances robustness and consistency in feature representations to improve a model's invariance to orientation and its resilience to FoV variations, by enforcing proximity between ground view variations of the same location. 
+            </p>
+
+            <figure class="image mod-figure">
+              <img src="static/images/Fig_Pipeline1.png" alt="Modalities overview" width="120%">
+            </figure>
+            <p style="font-size:13px; ">
+            ConGeo's learning pipeline. For feature representation in the left and right boxes, the North-aligned ground image, the transformed ground image, and the aerial view are sent to their respective encoders. Then in the feature space, the single- and cross-modal contrastive learning losses are applied to enforce the proximity of the paired images. 
+            </p>
+
+            <p>
+              The proposed training objectives contains cross-modal and single-modal contrastive learning with four losses:
+            </p>
+            <div align="center">
+            <img src="static/images/Fig_Equations.png" alt="An Overview of ConGeo" width="80%"/>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- End Method -->
+
+<!-- Image carousel -->
+<section class="section hero is-small is-light">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered has-text-centered">
+          <h2 class="title">Results</h2>
+          <p><br></p>
+        </div>
+
+        <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <div class="content has-text-justified">
+          <p>
+            Experiments are performed on four cross-view geolocalization benchmarks to investigate <b>ConGeo</b>'s <b>robustness</b>, <b>adaptability</b>, and <b>generalization ability</b>. Analysis on orientation invariance and activation map further comfirms <b>ConGeo</b>'s robustness.
+        </p>
+        </div>
+        </div>
+        </div>
+
+
+        <div class="item">
+        <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+        <div class="content has-text-justified">
+        <h4 class="subtitle">
+            <b>Robustness across different settings</b>
+          </h4>
+        <p>
+          Using a single model, ConGeo outperforms SOTA FoV-specific or orientation-specific models under ground-view variations and achieves leading performance under North alignment. 
+        </p>
+        </div>
+        </div>
+        </div>
+
+        <p><br></p>
+
+        <div align="center">
+          <img src="static/images/Fig_RFoVs.png" alt="MY ALT TEXT" width="30%"/>
+        </div>
+        <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+        <div class="content has-text-justified">
+        <div align="center">
+        <p style="font-size:13px; ">
+            Comparison with SOTA FoV-specific methods on different settings on the CVUSA dataset.
+        </p>
+        </div>
+        </div>
+        </div>
+        </div>
+
+        <p><br></p>
+        <div align="center">
+          <img src="static/images/retrieval_results.gif" alt="MY ALT TEXT" width="70%"/>
+        </div>
+        <p><br></p>
+        </div>
+
+        <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+        <div class="content has-text-justified">
+        <div align="center">
+        <p style="font-size:13px; ">
+            Retrieval results of the baseline model and of ConGeo undering the North-aligned setting and limited FoV setting.
+        </p>
+        </div>
+        </div>
+        </div>
+        </div>
+
+        <p><br></p>
+
+
+
+
+
+        <div class="item">
+        <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+        <div class="content has-text-justified">
+        <h4 class="subtitle">
+            <b>Superiority over data augmentations</b>
+          </h4>
+        <p>
+            ConGeo shows effectiveness compared with different data augmentation methods.
+        </p>
+        </div>
+        </div>
+        </div>
+
+        <p><br></p>
+        <div align="center">
+          <img src="static/images/aug_hist.png" alt="MY ALT TEXT" width="80%"/>
+        </div>
+
+        <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+        <div class="content has-text-justified">
+        <p style="font-size:13px; ">
+            Comparison on unknown orientation setting and limited FoV setting between ConGeo and different data augmentation methods on the CVUSA dataset. “Shift” denotes using shifted query images and “FoV” denotes using query images of limited FoVs, “Rotate” randomly rotating aerial images as data augmentation.
+        </p>
+        </div>
+        </div>
+        </div>
+
+        <p><br></p>
+
+      
+
+        <div class="item">
+        <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+        <div class="content has-text-justified">
+        <h4 class="subtitle">
+            <b>Generalization ability on unseen ground view variations</b>
+          </h4>
+        <p>
+            <b>ConGeo</b> generalizes better on unseen ground view variations than baseline model and baseline model with data augmentation.
+        </p>
+        </div>
+        </div>
+        </div>
+
+        <p><br></p>
+        <div align="center">
+          <img src="static/images/unseen_hist.png" alt="MY ALT TEXT" width="80%"/>
+        </div>
+
+        <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+        <div class="content has-text-justified">
+        <p style="font-size:13px; ">
+            Comparison on unseen ground view variations (e.g., Random FoVs, Random Zooming, Gaussian Noise, and Motion Blur) between ConGeo and baselines on the CVUSA dataset. “DA” means data augmentation.
+        </p>
+        </div>
+        </div>
+        </div>
+
+
+        <p><br></p>
+
+
+        <div class="item">
+        <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+        <div class="content has-text-justified">
+        <h4 class="subtitle">
+            <b>Analysis: How does ConGeo achieve robustness?</b>
+          </h4>
+        <p>
+            Orientation invariance analysis that showcases models’ vulnerabilities to orientation shifts and activation map visualization that investigates the models’ focus. 
+        </p>
+        </div>
+        </div>
+        </div>
+
+        <p><br></p>
+        <div align="center">
+          <img src="static/images/Fig_ROrientation.png" alt="MY ALT TEXT" width="45%"/>
+        </div>
+
+        <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+        <div class="content has-text-justified">
+        <p style="font-size:13px; ">
+            ConGeo shows better orientation invariance. We cyclically shift the ground view with an angle (x-axis) as the model’s input to test its retrieval performance. Note that “N-A” denotes the North-aligned setting and “DA” means data augmentation.
+        </p>
+        </div>
+        </div>
+        </div>
+
+          <p><br></p>
+          <!-- Your image here -->
+          <div align="center">
+          <img src="static/images/attention.gif" alt="MY ALT TEXT" width="70%"/>
+          </div>
+
+        <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+        <div class="content has-text-justified">
+        <div align="center">
+        <p style="font-size:13px; ">
+            ConGeo’s activation areas are more consistent across ground view shifts.
+        </p>
+        </div>
+        </div>
+        </div>
+        </div>
+
+        <p><br></p>
+        </div> 
+
+        <p><br></p>
+
+    </div>
+  </div>
+  </div>
+  </section>
+  <!-- End image carousel -->
+
+<!-- Paper poster 
+<section class="hero is-small is-light">
+  <div class="hero-body">
+    <div class="container">
+      <h2 class="title">Poster</h2>
+
+      <iframe  src="static/pdfs/sample.pdf" width="100%" height="550">
+          </iframe>
+        
+      </div>
+    </div>
+  </section>
+End paper poster -->
+
+
+<!--BibTex citation -->
+  <section class="section" id="BibTeX">
+    <div class="container is-max-desktop content">
+      <h2 class="title">BibTeX</h2>
+      <pre><code>@article{mi2024congeo,
+  title={ConGeo: Robust Cross-view Geo-localization across Ground View Variations},
+  author={Mi, Li and Xu, Chang and Castillo-Navarro, Javiera and Montariol, Syrielle and Yang, Wen and Bosselut, Antoine and Tuia, Devis},
+  journal={arXiv preprint arXiv:2403.13965},
+  year={2024}
+}</code></pre>
+    </div>
+</section>
+<!--End BibTex citation -->
+
+
+  <footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+
+          <p>
+            This page was built using the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank">Academic Project Page Template</a> which was adopted from the <a href="https://nerfies.github.io" target="_blank">Nerfies</a> project page.
+            You are free to borrow the template of this website, we just ask that you link back to this page in the footer. <br> This website is licensed under a <a rel="license"  href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative
+            Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Statcounter tracking code -->
+  
+<!-- You can add a tracker to track page visits by creating an account at statcounter.com -->
+
+    <!-- End of Statcounter Code -->
+
+  </body>
+  </html>
+
