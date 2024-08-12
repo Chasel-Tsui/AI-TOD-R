@@ -25,7 +25,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-  <title>ConGeo</title>
+  <title>AI-TOD-R</title>
   <link rel="icon" type="image/x-icon" href="static/images/favicon.ico">
   <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
   rel="stylesheet">
@@ -142,13 +142,15 @@
                   <p><br></p>
                 <p>
                 <div align="center">
-                <b style="font-size:21px; ">This work systematically address the challenging task of detecting oriented tiny objects in aerial images by establishing a dataset and a benchmark, and proposing a dynamic coarse-to-fine learning scheme aimed at scale-unbiased learning.</b> 
+                <b style="font-size:21px; ">This work addresses the challenging task of detecting oriented tiny objects by establishing a new dataset and a benchmark, and proposing a dynamic coarse-to-fine learning scheme aimed at scale-unbiased learning.</b> 
                 <p><br></p>
                 </div>
                 <div align="center">
-                <img src="static/images/fig1_v3.png" alt="An Overview of This Work" width="75%"/>
+                <img src="static/images/fig1_v3.png" alt="An Overview of This Work" width="70%"/>
                 </div> 
-                <b>Dataset</b>: Typical annotation examples from the AI-TOD-R. <b>Benchmark</b>: Detection paradigms covered by this benchmark, where ``L.'', ``U.'', ``S. L.'', and ``C. L.'' denote labelled, unlabelled, sparsely labelled, and coarsely labelled images, respectively. <b>Dynamic Unbiased Learning</b>: A comparison of learning paradigms for oriented object detection. Compared to prior arts (left), our proposed pipeline (right) eliminates the learning bias of tiny objects with a dynamically updated prior and a coarse-to-fine sample learning scheme.</p>
+                <p><b>Dataset</b>: AI-TOD-R has 28,036 images annotated with 752,460 oriented bounding boxes across 8 classes, it has the smallest mean object size ($10.6^{2}$) among existing oriented object detection datasets. </p>
+                <p><b>Benchmark</b>: This benchmark covers both fully-supervised and label efficient (SSOD, SAOD, WSOD) methods. Here, ``L.'', ``U.'', ``S. L.'', and ``C. L.'' denote labelled, unlabelled, sparsely labelled, and coarsely labelled images, respectively.</p> 
+                <p><b>Dynamic Unbiased Learning</b>: Compared to prior arts (left), our proposed pipeline (right) mitigates the model's learning bias against oriented tiny objects with a dynamically updated prior and a coarse-to-fine sample learning scheme.</p>
                 <!-- ArXiv abstract Link -->
                 <!--<span class="link-block">
                   <a href="https://arxiv.org/abs/<ARXIV PAPER ID>" target="_blank"
@@ -175,19 +177,24 @@
       <div class="column is-four-fifths">
         <h2 class="title is-3 has-text-centered">Motivation</h2>
         <div class="content has-text-justified">
-        <p>Cross-view geo-localization aims at localizing a ground-level query image by matching it to its corresponding geo-referenced aerial view. In real-world scenarios, the task requires accommodating diverse ground images captured by users with varying orientations and reduced field of views (FoVs), including the following settings: 
+        <p>Images will inevitably contain <b>objects at extremely tiny scales</b> when observations approach the camera's physical limit. Despite extreme, this scenario is ubiquitous in real world from micro-vision (medical, cell imaging) to macro-vision (drone, satellite imagery). In these specialized domains, imaging typically adopts a bird-eye's view to capture object's primary features, making them show arbitrary orientations. These oriented tiny objects pose severe challenges to object detection:
         </p>
         <ul>
-          <li><b>North-aligned:</b> Ground-view and aerial-view images are aligned to the North.</li>
-          <li><b>Unknown Orientation:</b> Ground-view images are of arbitrary orientations (FoV=360°).</li>
-          <li><b>Limited Field of View:</b> Ground-view images are of arbitrary orientations and limited fielf of views (e.g., FoV=70°, 90°, or 180°).</li>
+          <li><b>Difficult Label Acquisition:</b> The limited appearance information makes the labelling quite difficult.</li>
+          <li><b>Weak Feature Representation:</b> The features of oriented tiny objects will be lost in deep networks.</li>
+          <li><b>Dense Object Arrangement:</b> There can be thousands of objects per image due to overhead view.</li>
         </ul>
           <div align="center">
-            <img src="static/images/Fig_tasks.png" alt="An Overview of ConGeo" width="80%"/>
+            <img src="static/images/applications.png" alt="Application Scenarios" width="100%"/>
           </div>
           <p><br></p>
           <p>
-            However, existing learning pipelines are orientation-specific or FoV-specific, demanding separate model training for different ground view variations. To tackle this challenge, we propose <b>ConGeo</b>, a single- and cross-modal <b>Con</b>trastive method for <b>Geo</b>-localization that improves the base model's <b>robustness across various ground view variations</b>.
+          These challenges give rise to the following problems:
+            <ul>
+            <li>Existing methods struggle to deliver satisfactory performance. 77% objects in DOTA-v2 are in the size range of $10^{2}$-$50^{2}$ pixels, while the SOTA performance is still lower than 30% $\rm{AP^{@50:5:95}}$.</li>
+            <li>Detecting oriented tiny objects is a hard nut to crack in the community, while there is a lack of task-specific datasets and benchmarks to prompt the development of detection methods.</li>
+            </ul>
+          This motivates us to build a task-specific dataset, benchmark and method for oriented tiny objects.
           </p>
        </div>
       </div>
@@ -199,43 +206,63 @@
 
 
 
-<!-- Method -->
+<!-- Dataset -->
 <section class="section hero">
     <div class="container is-max-desktop">
       <div class="columns is-centered has-text-centered">
         <div class="column is-four-fifths">
-          <h2 class="title is-3">Method</h2>
+          <h2 class="title is-3">Dataset</h2>
           <div class="content has-text-justified">
             <p>
-            <b>ConGeo</b> enhances robustness and consistency in feature representations to improve a model's invariance to orientation and its resilience to FoV variations, by enforcing proximity between ground view variations of the same location. 
+            <b>AI-TOD-R</b> is obtained via a semi-automative labelling process, where coarse labels are genertaed H2RBox-v2 while fine labels are refined manually. AI-TOD-R contains 28,036 images annotated with 752,460 oriented bounding boxes across 8 classes, it has the smallest mean object size ($10.6^{2}$) among existing oriented object detection datasets.
             </p>
-
             <figure class="image mod-figure">
-              <img src="static/images/Fig_Pipeline1.png" alt="Modalities overview" width="120%">
+              <img src="static/images/aitodr_stat.png" alt="AI-TOD-R Statics" width="100%">
             </figure>
             <p style="font-size:13px; ">
-            ConGeo's learning pipeline. For feature representation in the left and right boxes, the North-aligned ground image, the transformed ground image, and the aerial view are sent to their respective encoders. Then in the feature space, the single- and cross-modal contrastive learning losses are applied to enforce the proximity of the paired images. 
+            AI-TOD-R's statistical analysis. In addition to extremely tiny object size, this dataset also shows arbitrary object orientation, dense arrangement, and class imbalance chellenges. 
             </p>
 
             <p>
-              The proposed training objectives contains cross-modal and single-modal contrastive learning with four losses:
+            More examples from AI-TOD-R:
             </p>
             <div align="center">
-            <img src="static/images/Fig_Equations.png" alt="An Overview of ConGeo" width="80%"/>
+            <img src="static/images/aitodr.png" alt="AI-TOD-R Visualization" width="100%"/>
             </div>
           </div>
         </div>
       </div>
     </div>
   </section>
-  <!-- End Method -->
+  <!-- Dataset -->
+
+  <!-- Paper Method -->
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3 has-text-centered">Method</h2>
+        <div class="content has-text-justified">
+        <p>Towards unbiased sample learning, we reformulate this process into a dynamic coarse-to-fine learning pipeline based on the dynamic priors. The coarse step works in an object-centric way, where we construct a coarse positive candidate bag to warrant sufficient and diverse positive samples for each object. The fine step aims at guaranteeing the learning quality, where we fit each gt with a Dynamic Gaussian Mixture Model (DGMM) as a constraint to select low-quality samples.
+        </p>
+          <div align="center">
+            <img src="static/images/pipeline_pami.png" alt="Method Overview" width="100%"/>
+          </div>
+          <p><br></p>
+       </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
 
 <!-- Image carousel -->
-<section class="section hero is-small is-light">
+<section class="section hero is-small">
     <div class="hero-body">
       <div class="container is-max-desktop">
         <div class="columns is-centered has-text-centered">
-          <h2 class="title">Results</h2>
+          <h2 class="title">Benchmark and Experiments</h2>
           <p><br></p>
         </div>
 
@@ -243,7 +270,7 @@
         <div class="column is-four-fifths">
           <div class="content has-text-justified">
           <p>
-            Experiments are performed on four cross-view geolocalization benchmarks to investigate <b>ConGeo</b>'s <b>robustness</b>, <b>adaptability</b>, and <b>generalization ability</b>. Analysis on orientation invariance and activation map further comfirms <b>ConGeo</b>'s robustness.
+            Experiments are performed on eight cross-view geolocalization benchmarks to investigate <b>ConGeo</b>'s <b>robustness</b>, <b>adaptability</b>, and <b>generalization ability</b>. Analysis on orientation invariance and activation map further comfirms <b>ConGeo</b>'s robustness.
         </p>
         </div>
         </div>
@@ -255,7 +282,7 @@
         <div class="column is-four-fifths">
         <div class="content has-text-justified">
         <h4 class="subtitle">
-            <b>Robustness across different settings</b>
+            <b>AI-TOD-R Dataset</b>
           </h4>
         <p>
           Using a single model, ConGeo outperforms SOTA FoV-specific or orientation-specific models under ground-view variations and achieves leading performance under North alignment. 
@@ -311,7 +338,7 @@
         <div class="column is-four-fifths">
         <div class="content has-text-justified">
         <h4 class="subtitle">
-            <b>Superiority over data augmentations</b>
+            <b>Small Oriented Object Detection</b>
           </h4>
         <p>
             ConGeo shows effectiveness compared with different data augmentation methods.
@@ -344,7 +371,7 @@
         <div class="column is-four-fifths">
         <div class="content has-text-justified">
         <h4 class="subtitle">
-            <b>Generalization ability on unseen ground view variations</b>
+            <b>Oriented Object Detection</b>
           </h4>
         <p>
             <b>ConGeo</b> generalizes better on unseen ground view variations than baseline model and baseline model with data augmentation.
@@ -449,7 +476,7 @@ End paper poster -->
   <section class="section" id="BibTeX">
     <div class="container is-max-desktop content">
       <h2 class="title">BibTeX</h2>
-      <pre><code>@article{mi2024congeo,
+      <pre><code>@article{xu2024oriented,
   title={Oriented Tiny Object Detection: A Dataset, Benchmark, and Dynamic Unbiased Learning},
   author={Xu, Chang and Zhang, Ruixiang and Yang, Wen and Zhu, Haoran and Xu, Fang and Xia, Gui-Song},
   journal={arXiv preprint},
