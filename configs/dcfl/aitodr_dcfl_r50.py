@@ -1,19 +1,3 @@
-'''
-Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=1500 ] = 0.123
-Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=1500 ] = 0.367
-Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=1500 ] = 0.045
-Average Precision  (AP) @[ IoU=0.50:0.95 | area=very tiny | maxDets=1500 ] = 0.043
-Average Precision  (AP) @[ IoU=0.50:0.95 | area=  tiny | maxDets=1500 ] = 0.107
-Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=1500 ] = 0.172
-Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=1500 ] = 0.222
-Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=1500 ] = 0.239
-Average Recall     (AR) @[ IoU=0.50:0.95 | area=very tiny | maxDets=1500 ] = 0.072
-Average Recall     (AR) @[ IoU=0.50:0.95 | area=  tiny | maxDets=1500 ] = 0.237
-Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=1500 ] = 0.293
-Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=1500 ] = 0.312
-2024-06-23 06:17:55,238 - mmrotate - INFO - Exp name: p02.01.aitodr_dcfl_r50.py
-2024-06-23 06:17:55,248 - mmrotate - INFO - Epoch(val) [12][13940]      mAP_AP: 0.1230, mAP_AP_50: 0.3670, mAP_AP_75: 0.0450, mAP_AP_vt: 0.0430, mAP_AP_t: 0.1070, mAP_AP_s: 0.1720, mAP_AP_m: 0.2220, mAP_mAP_copypaste: 0.123 0.367 0.045 0.043 0.107 0.172 0.222
-'''
 _base_ = [
     '../_base_/datasets/aitodr.py', '../_base_/schedules/schedule_1x.py',
     '../_base_/default_runtime.py'

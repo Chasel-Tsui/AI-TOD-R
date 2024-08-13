@@ -1,19 +1,3 @@
-'''
-Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=1500 ] = 0.157
-Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=1500 ] = 0.470
-Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=1500 ] = 0.058
-Average Precision  (AP) @[ IoU=0.50:0.95 | area=very tiny | maxDets=1500 ] = 0.063
-Average Precision  (AP) @[ IoU=0.50:0.95 | area=  tiny | maxDets=1500 ] = 0.148
-Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=1500 ] = 0.196
-Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=1500 ] = 0.225
-Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=1500 ] = 0.273
-Average Recall     (AR) @[ IoU=0.50:0.95 | area=very tiny | maxDets=1500 ] = 0.117
-Average Recall     (AR) @[ IoU=0.50:0.95 | area=  tiny | maxDets=1500 ] = 0.283
-Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=1500 ] = 0.287
-Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=1500 ] = 0.299
-2024-06-23 06:43:50,282 - mmrotate - INFO - Exp name: p02.03.aitodr_oriented_rcnn_r50.py
-2024-06-23 06:43:50,283 - mmrotate - INFO - Epoch(val) [12][13940]      mAP_AP: 0.1570, mAP_AP_50: 0.4700, mAP_AP_75: 0.0580, mAP_AP_vt: 0.0630, mAP_AP_t: 0.1480, mAP_AP_s: 0.1960, mAP_AP_m: 0.2250, mAP_mAP_copypaste: 0.157 0.470 0.058 0.063 0.148 0.196 0.225
-'''
 _base_ = [
     '../_base_/datasets/aitodr.py', '../_base_/schedules/schedule_1x.py',
     '../_base_/default_runtime.py'
