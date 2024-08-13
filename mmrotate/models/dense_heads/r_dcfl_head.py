@@ -385,7 +385,7 @@ class RDCFLHead(RotatedAnchorHead):
             self.train_cfg.allowed_border)
         if not inside_flags.any():
             return (None, ) * 7
-        anchors = flat_anchors 
+        anchors = flat_anchors #[inside_flags, :]
         detached_offsets = offsets.detach()
         dy = torch.zeros(1, detached_offsets.size(1)).cuda()
         dx = torch.zeros(1, detached_offsets.size(1)).cuda()
@@ -398,16 +398,15 @@ class RDCFLHead(RotatedAnchorHead):
         flat_anchors[...,1] = flat_anchors[...,1]  + dy 
 
         deformable_anchors = flat_anchors
-    
         
         if self.assign_by_circumhbbox is not None:
             gt_bboxes_assign = obb2hbb(gt_bboxes, self.assign_by_circumhbbox)
             assign_result = self.assigner.assign(
-                flat_cls_scores, flat_bbox_preds, deformable_anchors, gt_bboxes_assign, gt_bboxes_ignore,
+                flat_cls_scores, flat_bbox_preds, anchors, deformable_anchors, gt_bboxes_assign, gt_bboxes_ignore,
                 None if self.sampling else gt_labels)
         else:
             assign_result = self.assigner.assign(
-                flat_cls_scores, flat_bbox_preds, deformable_anchors, gt_bboxes, gt_bboxes_ignore,
+                flat_cls_scores, flat_bbox_preds, anchors, deformable_anchors, gt_bboxes, gt_bboxes_ignore,
                 None if self.sampling else gt_labels)
 
         sampling_result = self.sampler.sample(assign_result, anchors,
@@ -447,7 +446,7 @@ class RDCFLHead(RotatedAnchorHead):
             label_weights[neg_inds] = 1.0
 
         # map up to original set of anchors
-        if unmap_outputs:
+        if 0:#unmap_outputs:
             num_total_anchors = flat_anchors.size(0)
             labels = unmap(
                 labels, num_total_anchors, inside_flags,
@@ -534,7 +533,7 @@ class RDCFLHead(RotatedAnchorHead):
         concat_offsets_ori = []
         lvl_offsets = []
         lvl_offsets_ori = []
-        factor = img_metas[0]['img_shape'][0]/256
+        factor = 4
 
         # concat all level cls/reg results to a single tensor
         lvl_scores = []

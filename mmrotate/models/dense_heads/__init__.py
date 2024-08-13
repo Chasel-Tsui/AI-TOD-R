@@ -17,6 +17,10 @@ from .rotated_retina_refine_head import RotatedRetinaRefineHead
 from .rotated_rpn_head import RotatedRPNHead
 from .sam_reppoints_head import SAMRepPointsHead
 from .r_dcfl_head import RDCFLHead
+from .r_dcfl_plus_head import RDCFLPlusHead
+from .oriented_rpn_dcfl_plus_head import OrientedRPN_DCFLPlusHead
+from .oriented_rpn_dcfl_head import OrientedRPN_DCFLHead
+from .rotated_fcos_dcfl_head import RotatedFCOS_DCFLHead
 
 
 __all__ = [
@@ -25,5 +29,5 @@ __all__ = [
     'KFIoURRetinaHead', 'KFIoURRetinaRefineHead', 'KFIoUODMRefineHead',
     'RotatedRepPointsHead', 'SAMRepPointsHead', 'CSLRRetinaHead',
     'RotatedATSSHead', 'RotatedAnchorFreeHead', 'RotatedFCOSHead',
-    'CSLRFCOSHead', 'OrientedRepPointsHead','RDCFLHead'
+    'CSLRFCOSHead', 'OrientedRepPointsHead','RDCFLHead', 'RDCFLPlusHead','OrientedRPN_DCFLPlusHead', 'OrientedRPN_DCFLHead','RotatedFCOS_DCFLHead'
 ]
