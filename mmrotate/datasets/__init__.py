@@ -7,5 +7,6 @@ from .sar import SARDataset  # noqa: F401, F403
 from .dotav2 import DOTAv2Dataset
 from .dotav1_5 import DOTAv1_5Dataset
 from .dior import DIORDataset
+from .aitodr import AITODRDataset
 
-__all__ = ['SARDataset', 'DOTADataset', 'build_dataset', 'HRSCDataset','DOTAv2Dataset','DIORDataset','DOTAv1_5Dataset']
+__all__ = ['SARDataset', 'DOTADataset', 'build_dataset', 'HRSCDataset','DOTAv2Dataset','DIORDataset','DOTAv1_5Dataset','AITODRDataset']
