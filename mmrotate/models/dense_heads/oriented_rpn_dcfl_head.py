@@ -17,10 +17,8 @@ import pdb
 class OrientedRPN_DCFLHead(RotatedRPNHead):
     """Oriented RPN head for Oriented R-CNN."""
     def __init__(self,
-                loss_offsets = dict(type='InduLoss', mode='l1',loss_weight=1.0),
                  **kwargs):
         super(OrientedRPN_DCFLHead, self).__init__(**kwargs)
-        self.loss_offsets = build_loss(loss_offsets)
 
 
     def _init_layers(self):
