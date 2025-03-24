@@ -1,6 +1,7 @@
 import torch
 import json
 import numpy
+import pdb
 
 from ..builder import build_bbox_coder
 from mmdet.core.bbox.iou_calculators import build_iou_calculator
@@ -68,32 +69,33 @@ class C2FAssigner(BaseAssigner):
         self.gauss_thr = gauss_thr
         self.bbox_coder = build_bbox_coder(bbox_coder)
 
-    def assign(self, cls_scores, bbox_preds, bboxes, gt_bboxes, gt_bboxes_ignore=None, gt_labels=None):
+    def assign(self, cls_scores, bbox_preds, anchors, deformable_anchors, gt_bboxes, gt_bboxes_ignore=None, gt_labels=None):
         """Assign gt to bboxes.
         """
         assign_on_cpu = True if (self.gpu_assign_thr >= 0) and (
             gt_bboxes.shape[0] > self.gpu_assign_thr) else False
         # compute overlap and assign gt on CPU when number of GT is large
         if assign_on_cpu:
-            device = bboxes.device
-            bboxes = bboxes.cpu()
+            device = anchors.device
+            anchors = anchors.cpu()
+            deformable_anchors = deformable_anchors.cpu()
             gt_bboxes = gt_bboxes.cpu()
             if gt_bboxes_ignore is not None:
                 gt_bboxes_ignore = gt_bboxes_ignore.cpu()
             if gt_labels is not None:
                 gt_labels = gt_labels.cpu()
 
-        overlaps = self.iou_calculator(gt_bboxes, bboxes, mode=self.assign_metric)
+        overlaps = self.iou_calculator(gt_bboxes, deformable_anchors, mode=self.assign_metric)
 
         if (self.ignore_iof_thr > 0 and gt_bboxes_ignore is not None
-                and gt_bboxes_ignore.numel() > 0 and bboxes.numel() > 0):
+                and gt_bboxes_ignore.numel() > 0 and anchors.numel() > 0):
             if self.ignore_wrt_candidates:
                 ignore_overlaps = self.iou_calculator(
-                    bboxes, gt_bboxes_ignore, mode='iof')
+                    deformable_anchors, gt_bboxes_ignore, mode='iof')
                 ignore_max_overlaps, _ = ignore_overlaps.max(dim=1)
             else:
                 ignore_overlaps = self.iou_calculator(
-                    gt_bboxes_ignore, bboxes, mode='iof')
+                    gt_bboxes_ignore, deformable_anchors, mode='iof')
                 ignore_max_overlaps, _ = ignore_overlaps.max(dim=0)
             overlaps[:, ignore_max_overlaps > self.ignore_iof_thr] = -1
 
@@ -135,14 +137,14 @@ class C2FAssigner(BaseAssigner):
                 max_overlap_inds = overlaps[i,:] == gt_max_overlaps[i,j]
                 assigned_gt_inds[max_overlap_inds] = i + 1
 
-        device = bboxes.device
-        bbox_preds = bbox_preds.to(device)
-        cls_scores = cls_scores.to(device)
-        bbox_preds = torch.transpose(bbox_preds, 0, 1)
-        bbox_preds = self.bbox_coder.decode(bboxes, bbox_preds)
-        
+        device = anchors.device
+        bbox_preds_detached = bbox_preds.detach().to(device)
+        cls_scores_detached = cls_scores.detach().to(device)
+        bbox_preds_detached = torch.transpose(bbox_preds_detached, 0, 1)
+        bbox_preds_detached = self.bbox_coder.decode(anchors, bbox_preds_detached) # here it shoud be anchors!
+
         num_gt = gt_bboxes.size(0)
-        num_bboxes = bboxes.size(0)
+        num_bboxes = deformable_anchors.size(0)
 
         can_positive_mask = assigned_gt_inds > 0
         can_positive_inds = torch.nonzero(can_positive_mask)
@@ -150,10 +152,10 @@ class C2FAssigner(BaseAssigner):
         poscan = assigned_gt_inds[can_positive_inds].squeeze(-1)
         can_other_mask = assigned_gt_inds <= 0
 
-        can_pos_scores = cls_scores[:,can_positive_inds].squeeze(-1)
+        can_pos_scores = cls_scores_detached[:,can_positive_inds].squeeze(-1)
 
         can_pos_scores = torch.transpose(can_pos_scores, 0, 1)
-        can_bbox_pred = bbox_preds[can_positive_inds,:].squeeze(-1)
+        can_bbox_pred = bbox_preds_detached[can_positive_inds,:].squeeze(-1) #-1
 
         can_pos_iou = self.iou_calculator(gt_bboxes.to(device), can_bbox_pred, mode ='iou')
         can_pos_iou = can_pos_iou[poscan-1,range(poscan.size(0))]
@@ -174,24 +176,32 @@ class C2FAssigner(BaseAssigner):
         assign_result_pre_gt = assigned_gt_inds
 
         assigned_gt_inds_init = assign_result_pre_gt * can_other_mask
-        assigned_pos_prior = torch.zeros((num_gt, topq, 5),device=device)
+        assigned_pos_prior = torch.zeros((num_gt, topq, deformable_anchors.size(-1)),device=device)
         
         for i in range(num_gt):
             for j in range(topq):
                 index = gt_argmax_quality[i,j]
                 remap_inds = can_positive_inds[index,0]
-                assigned_gt_inds_init[remap_inds] = assign_result_pre_gt [remap_inds]
-                assigned_pos_prior[i,j,:] = bboxes[remap_inds,:] 
+                assigned_gt_inds_init[remap_inds] = assign_result_pre_gt[remap_inds]
+                assigned_pos_prior[i,j,:] = deformable_anchors[remap_inds,:] 
         assigned_gt_inds = assigned_gt_inds_init
 
         if self.constraint == 'dgmm':
             device1 = gt_bboxes.device
+            # pdb.set_trace()
             xy_gt, sigma_t = self.xy_wh_r_2_xy_sigma(gt_bboxes)
             # get the mean of the positive samples
-            pos_prior_mean = torch.mean(assigned_pos_prior[...,:2], dim=-2)
+            if assigned_pos_prior.size(-1)==4:
+                assigned_pos_prior_ctr = (assigned_pos_prior[...,[0,1]]+assigned_pos_prior[...,[2,3]])/2
+                pos_prior_mean = torch.mean(assigned_pos_prior_ctr, dim=-2)
+            else:
+                pos_prior_mean = torch.mean(assigned_pos_prior[...,:2], dim=-2)
             _, sigma_t = self.xy_wh_r_2_xy_sigma(gt_bboxes)
             xy_pt = pos_prior_mean
-            xy_a = bboxes[...,:2]
+            if deformable_anchors.size(-1) == 4:
+                xy_a = (deformable_anchors[...,[0,1]]+deformable_anchors[...,[2,3]])/2
+            else:
+                xy_a = deformable_anchors[...,:2]
             xy_gt = xy_gt[...,None,:,:2].unsqueeze(-1)
             xy_pt = xy_pt[...,None,:,:2].unsqueeze(-1)
             xy_a = xy_a[...,:,None,:2].unsqueeze(-1)
@@ -206,7 +216,7 @@ class C2FAssigner(BaseAssigner):
             inside_flag = gaussian >= torch.exp(torch.tensor([-self.gauss_thr])).to(device1)
             length = range(assigned_gt_inds.size(0))
             inside_mask = inside_flag[length, (assigned_gt_inds-1).clamp(min=0)]
-            assigned_gt_inds *= inside_mask
+            assigned_gt_inds = assigned_gt_inds * inside_mask
 
         if gt_labels is not None:
             assigned_labels = assigned_gt_inds.new_full((num_bboxes,), -1)
@@ -218,8 +228,11 @@ class C2FAssigner(BaseAssigner):
         else:
             assigned_labels = None
 
+        #assign_result = AssignResult(
+        #    num_gts, assigned_gt_inds, max_overlaps, labels=assigned_labels)
+
         assign_result = AssignResult(
-            num_gts, assigned_gt_inds, max_overlaps, labels=assigned_labels)
+            num_gts, assigned_gt_inds, max_overlaps, labels=assigned_labels)        
 
         if assign_on_cpu:
             assign_result.gt_inds = assign_result.gt_inds.to(device)
@@ -229,7 +242,7 @@ class C2FAssigner(BaseAssigner):
         
         return assign_result
 
-    def assign_wrt_ranking(self,  overlaps, gt_labels=None):
+    def assign_wrt_ranking(self, overlaps, gt_labels=None):
         num_gts, num_bboxes = overlaps.size(0), overlaps.size(1)
 
         # 1. assign -1 by default
@@ -261,7 +274,6 @@ class C2FAssigner(BaseAssigner):
         # for each gt, topk anchors
         # for each gt, the topk of all proposals
         gt_max_overlaps, _ = overlaps.topk(self.topk, dim=1, largest=True, sorted=True)  # gt_argmax_overlaps [num_gt, k]
-
 
         assigned_gt_inds[(max_overlaps >= 0)
                              & (max_overlaps < 0.8)] = 0
